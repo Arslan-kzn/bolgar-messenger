@@ -94,6 +94,7 @@ dev_dependencies:
     sdk: flutter
   license_checker: ^1.6.2
   translations_cleaner: ^0.0.5
+  flutter_launcher_icons: ^0.13.1
 
 import_sorter:
   ignored_files: # Optional, defaults to []
@@ -103,6 +104,11 @@ flutter_native_splash:
   color: "#ffffff"
   color_dark: "#000000"
   image: "assets/info-logo.png"
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/info-logo.png"
 
 flutter:
   generate: true
