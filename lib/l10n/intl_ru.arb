@@ -1116,7 +1116,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "login": "Bolgaristan",
+    "login": "Керү",
     "@login": {
         "type": "String",
         "placeholders": {}
@@ -3145,7 +3145,7 @@
             }
         }
     },
-    "continueText": "Керү",
+    "continueText": "Башлыйбыз",
     "@continueText": {},
     "blur": "Размытие:",
     "@blur": {},

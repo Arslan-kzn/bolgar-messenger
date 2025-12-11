@@ -1333,7 +1333,7 @@
     "type": "String",
     "placeholders": {}
   },
-  "login": "Bolgaristan",
+  "login": "Керү",
   "@login": {
     "type": "String",
     "placeholders": {}
@@ -3155,7 +3155,7 @@
   "@oneOfYourDevicesIsNotVerified": {},
   "noticeChatBackupDeviceVerification": "Note: When you connect all your devices to the chat backup, they are automatically verified.",
   "@noticeChatBackupDeviceVerification": {},
-  "continueText": "Керү",
+  "continueText": "Башлыйбыз",
   "@continueText": {},
   "welcomeText": "Hey Hey 👋 This is Bolgarlar. You can sign in to any homeserver, which is compatible with https://bolgarlar.ru. And then chat with anyone. It's a huge decentralized messaging network!",
   "@welcomeText": {},
