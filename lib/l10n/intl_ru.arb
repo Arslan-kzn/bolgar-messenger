@@ -1116,7 +1116,7 @@
         "type": "String",
         "placeholders": {}
     },
-    "login": "Bolgarlar-messenger",
+    "login": "Bolgaristan",
     "@login": {
         "type": "String",
         "placeholders": {}
@@ -3109,7 +3109,7 @@
             }
         }
     },
-    "welcomeText": "Мессенджер Bolgarlar позволяет общаться с семьёй, друзьями, уммой.\n\n РӘХИМ ИТЕГЕЗ! \n\n ٱلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ ٱللَّٰهِ وَبَرَكَاتُهُ",
+    "welcomeText": "Мессенджер Bolgarlar позволяет общаться с семьёй, друзьями, уммой.\n\n РӘХИМ ИТЕГЕЗ! ُ",
     "@welcomeText": {},
     "noContactInformationProvided": "Сервер не предоставляет никакой правдивой контактной информации",
     "@noContactInformationProvided": {},
@@ -3145,7 +3145,7 @@
             }
         }
     },
-    "continueText": "Продолжить",
+    "continueText": "Керү",
     "@continueText": {},
     "blur": "Размытие:",
     "@blur": {},
