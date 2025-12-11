@@ -17,7 +17,6 @@ dependencies {
     implementation("androidx.core:core-ktx:1.17.0") // For Android Auto
 }
 
-
 // Workaround for https://pub.dev/packages/unifiedpush#the-build-fails-because-of-duplicate-classes
 configurations.all {
     // Use the latest version published: https://central.sonatype.com/artifact/com.google.crypto.tink/tink-android
@@ -32,8 +31,8 @@ configurations.all {
     }
 }
 
-
 android {
+
     namespace = "chat.fluffy.fluffychat"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
@@ -48,8 +47,9 @@ android {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
+    // Базовый release-конфиг — будет перезаписан, если есть key.properties
     signingConfigs {
-       create("release") {
+        create("release") {
             keyAlias = "dummyAlias"
             keyPassword = "dummyPassword"
             storeFile = file("dummy.keystore")
@@ -57,6 +57,7 @@ android {
         }
     }
 
+    // Читаем наш реальный ключ из android/key.properties
     val keystoreProperties = Properties()
     val keystorePropertiesFile = rootProject.file("key.properties")
     if (keystorePropertiesFile.exists()) {
@@ -64,7 +65,7 @@ android {
         signingConfigs.getByName("release").apply {
             keyAlias = keystoreProperties["keyAlias"] as String
             keyPassword = keystoreProperties["keyPassword"] as String
-            storeFile = keystoreProperties["storeFile"]?.let { file(it) }
+            storeFile = file(keystoreProperties["storeFile"] as String)
             storePassword = keystoreProperties["storePassword"] as String
         }
     }
@@ -80,7 +81,7 @@ android {
     buildTypes {
         release {
             signingConfig = signingConfigs.getByName("release")
-            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-android.txt", "proguard-rules.pro")
         }
     }
 }
