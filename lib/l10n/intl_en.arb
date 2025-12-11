@@ -3218,7 +3218,7 @@
   "@open": {},
   "waitingForServer": "Waiting for server...",
   "@waitingForServer": {},
-  "appIntroduction": "Bolgarlar lets you chat with your friends across different messengers. Learn more at https://matrix.org or just tap *Continue*.",
+  "appIntroduction": "Мессенджер Bolgarlar позволяет общаться с семьёй, друзьями, уммой.\n\n РӘХИМ ИТЕГЕЗ! \n\n ٱلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ ٱللَّٰهِ وَبَرَكَاتُهُ",
   "@appIntroduction": {},
   "newChatRequest": "📩 New chat request",
   "@newChatRequest": {},
