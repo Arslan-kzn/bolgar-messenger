@@ -3157,7 +3157,7 @@
   "@noticeChatBackupDeviceVerification": {},
   "continueText": "Башлыйбыз",
   "@continueText": {},
-  "welcomeText": "Hey Hey 👋 This is Bolgarlar. You can sign in to any homeserver, which is compatible with https://bolgarlar.ru. And then chat with anyone. It's a huge decentralized messaging network!",
+  "welcomeText": "Мессенджер Bolgarlar позволяет общаться с семьёй, друзьями, уммой.\n\n РӘХИМ ИТЕГЕЗ!",
   "@welcomeText": {},
   "blur": "Blur:",
   "@blur": {},
