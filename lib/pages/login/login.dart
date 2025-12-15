@@ -25,9 +25,30 @@ class LoginController extends State<Login> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   String? usernameError;
-  String? passwordError;
+  String? error;
   bool loading = false;
   bool showPassword = false;
+  bool canRegister = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _probeRegistration();
+  }
+
+  Future<void> _probeRegistration() async {
+    try {
+      final client = await Matrix.of(context).getLoginClient();
+      await client.register();
+    } on MatrixException catch (e) {
+      if (!mounted) return;
+      if (e.requireAdditionalAuthentication) {
+        setState(() => canRegister = true);
+      }
+    } catch (_) {
+      // silently ignore
+    }
+  }
 
   void toggleShowPassword() =>
       setState(() => showPassword = !loading && !showPassword);
@@ -40,9 +61,9 @@ class LoginController extends State<Login> {
       setState(() => usernameError = null);
     }
     if (passwordController.text.isEmpty) {
-      setState(() => passwordError = L10n.of(context).pleaseEnterYourPassword);
+      setState(() => error = L10n.of(context).pleaseEnterYourPassword);
     } else {
-      setState(() => passwordError = null);
+      setState(() => error = null);
     }
 
     if (usernameController.text.isEmpty || passwordController.text.isEmpty) {
@@ -82,10 +103,10 @@ class LoginController extends State<Login> {
         initialDeviceDisplayName: PlatformInfos.clientName,
       );
     } on MatrixException catch (exception) {
-      setState(() => passwordError = exception.errorMessage);
+      setState(() => error = exception.errorMessage);
       return setState(() => loading = false);
     } catch (exception) {
-      setState(() => passwordError = exception.toString());
+      setState(() => error = exception.toString());
       return setState(() => loading = false);
     }
 
@@ -230,6 +251,102 @@ class LoginController extends State<Login> {
       usernameController.text = input;
       passwordController.text = password;
       login();
+    }
+  }
+
+  Future<void> registerAction() async {
+    final usernameCtrl = TextEditingController();
+    final pass1Ctrl = TextEditingController();
+    final pass2Ctrl = TextEditingController();
+
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Создать аккаунт'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: usernameCtrl,
+              decoration: const InputDecoration(labelText: 'Логин (localpart)'),
+            ),
+            TextField(
+              controller: pass1Ctrl,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: 'Пароль'),
+            ),
+            TextField(
+              controller: pass2Ctrl,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: 'Повтор пароля'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Отмена'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Создать'),
+          ),
+        ],
+      ),
+    );
+
+    if (ok != true) return;
+
+    final username = usernameCtrl.text.trim();
+    final p1 = pass1Ctrl.text;
+    final p2 = pass2Ctrl.text;
+
+    if (username.isEmpty || p1.isEmpty) {
+      setState(() => error = 'Заполните логин и пароль');
+      return;
+    }
+    if (p1 != p2) {
+      setState(() => error = 'Пароли не совпадают');
+      return;
+    }
+
+    setState(() {
+      loading = true;
+      error = null;
+    });
+
+    try {
+      final client = await Matrix.of(context).getLoginClient();
+
+      try {
+        // Пытаемся сразу с dummy
+        await client.register(
+          username: username,
+          password: p1,
+          initialDeviceDisplayName: PlatformInfos.clientName,
+          auth: AuthenticationData(type: AuthenticationTypes.dummy),
+        );
+      } on MatrixException catch (e) {
+        // Если сервер потребовал session — повторяем с session
+        if (!e.requireAdditionalAuthentication) rethrow;
+
+        await client.register(
+          username: username,
+          password: p1,
+          initialDeviceDisplayName: PlatformInfos.clientName,
+          auth: AuthenticationData(
+            type: AuthenticationTypes.dummy,
+            session: e.session,
+          ),
+        );
+      }
+
+      // Дальше — так же, как у вас делается после успешного login().
+      Matrix.of(context).initMatrix();
+    } catch (e) {
+      setState(() => error = e.toLocalizedString(context));
+    } finally {
+      if (mounted) setState(() => loading = false);
     }
   }
 
