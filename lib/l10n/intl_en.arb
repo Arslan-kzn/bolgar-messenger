@@ -1201,7 +1201,7 @@
     "type": "String",
     "placeholders": {}
   },
-  "inviteText": "{username} invited you to Bolgarlar.\n1. Visit Bolgarlar.ru and install the app \n2. Sign up or sign in \n3. Open the invite link: \n {link}",
+  "inviteText": "{username} пригласил(а) вас в Bolgarlar. \n1. Скачайте и установите приложение по ссылке: https://bolgarlar.ru/downloads/bolgar-messenger.apk\n2. Зарегистрируйтесь или войдите \nЭто безопасно - устанавливайте, давая разрешения.",
   "@inviteText": {
     "type": "String",
     "placeholders": {
