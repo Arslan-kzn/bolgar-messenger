@@ -90,7 +90,7 @@ class LoginView extends StatelessWidget {
                     onSubmitted: (_) => controller.login(),
                     decoration: InputDecoration(
                       prefixIcon: const Icon(Icons.lock_outlined),
-                      errorText: controller.passwordError,
+                      errorText: controller.error,
                       errorStyle: const TextStyle(color: Colors.orange),
                       suffixIcon: IconButton(
                         onPressed: controller.toggleShowPassword,
@@ -123,14 +123,19 @@ class LoginView extends StatelessWidget {
                 const SizedBox(height: 16),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                  child: TextButton(
-                    onPressed: controller.loading
-                        ? () {}
-                        : controller.passwordForgotten,
-                    style: TextButton.styleFrom(
-                      foregroundColor: theme.colorScheme.error,
-                    ),
-                    child: Text(L10n.of(context).passwordForgotten),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        onPressed: controller.loading ? null : controller.passwordForgotten,
+                        child: Text(L10n.of(context).passwordForgotten),
+                      ),
+                      if (controller.canRegister)
+                        TextButton(
+                          onPressed: controller.loading ? null : controller.registerAction,
+                          child: const Text('Создать аккаунт'),
+                        ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 16),
