@@ -42,6 +42,9 @@ import '../config/app_config.dart';
 import '../config/setting_keys.dart';
 import '../widgets/matrix.dart';
 import 'platform_infos.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
+
 
 //<GOOGLE_SERVICES>import 'package:fcm_shared_isolate/fcm_shared_isolate.dart';
 
@@ -51,6 +54,7 @@ class NoTokenException implements Exception {
 
 class BackgroundPush {
   static BackgroundPush? _instance;
+  final FirebaseMessaging firebase = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   Client client;
@@ -125,17 +129,72 @@ class BackgroundPush {
         onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
       );
       Logs().v('Flutter Local Notifications initialized');
-      //<GOOGLE_SERVICES>firebase.setListeners(
-      //<GOOGLE_SERVICES>  onMessage: (message) => pushHelper(
-      //<GOOGLE_SERVICES>    PushNotification.fromJson(
-      //<GOOGLE_SERVICES>      Map<String, dynamic>.from(message['data'] ?? message),
-      //<GOOGLE_SERVICES>    ),
-      //<GOOGLE_SERVICES>    client: client,
-      //<GOOGLE_SERVICES>    l10n: l10n,
-      //<GOOGLE_SERVICES>    activeRoomId: matrix?.activeRoomId,
-      //<GOOGLE_SERVICES>    flutterLocalNotificationsPlugin: _flutterLocalNotificationsPlugin,
-      //<GOOGLE_SERVICES>  ),
-      //<GOOGLE_SERVICES>);
+
+      // FCM: обрабатываем входящие data-only пуши (data_message) и показываем локальное уведомление.
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+        Logs().v('[Push] FCM onMessage: data=${message.data}');
+
+        try {
+          // RemoteMessage.data приходит как Map, но значения часто строки.
+          final raw = Map<String, dynamic>.from(message.data);
+
+          // Нормализуем структуру под PushNotification.fromJson(...)
+          final normalized = <String, dynamic>{...raw};
+
+          // Иногда сервер/шлюз кладёт JSON в поле "data" или "notification" строкой.
+          dynamic notif = normalized['notification'] ?? normalized['data'];
+          if (notif is String) {
+            try {
+              notif = jsonDecode(notif);
+            } catch (_) {
+              // оставляем как есть
+            }
+          }
+
+          // Приводим к виду: {"notification": {...}}
+          if (notif is Map) {
+            normalized['notification'] = Map<String, dynamic>.from(notif as Map);
+          } else if (normalized.containsKey('event_id') || normalized.containsKey('room_id')) {
+            normalized['notification'] = <String, dynamic>{
+              if (normalized['event_id'] != null) 'event_id': normalized['event_id'],
+              if (normalized['room_id'] != null) 'room_id': normalized['room_id'],
+            };
+          }
+
+          // counts тоже может приходить строкой-JSON
+          final counts = normalized['counts'];
+          if (counts is String) {
+            try {
+              normalized['counts'] = jsonDecode(counts);
+            } catch (_) {
+              // ignore
+            }
+          }
+
+          // Некоторые пути ожидают devices (как у UnifiedPush-обработчика в этом же файле)
+          normalized['devices'] ??= [
+            {
+              'app_id': '${AppConfig.pushNotificationsAppId}.data_message',
+              'pushkey': _fcmToken ?? '',
+            }
+          ];
+
+          final pn = PushNotification.fromJson(normalized);
+
+          await pushHelper(
+            pn,
+            client: client,
+            l10n: l10n,
+            activeRoomId: matrix?.activeRoomId,
+            flutterLocalNotificationsPlugin: _flutterLocalNotificationsPlugin,
+            useNotificationActions: true,
+          );
+        } catch (e, s) {
+          Logs().e('[Push] Failed to handle FCM onMessage', e, s);
+        }
+      });
+
+
       if (Platform.isAndroid) {
         await UnifiedPush.initialize(
           onNewEndpoint: _newUpEndpoint,
@@ -203,6 +262,10 @@ class BackgroundPush {
           ?.requestNotificationsPermission();
     }
     final clientName = PlatformInfos.clientName;
+    final deviceDisplayName = (client.deviceName?.isNotEmpty ?? false)
+        ? client.deviceName!
+        : client.deviceID.toString();
+
     oldTokens ??= <String>{};
     final pushers =
         await (client.getPushers().catchError((e) {
@@ -229,7 +292,7 @@ class BackgroundPush {
           currentPushers.first.kind == 'http' &&
           currentPushers.first.appId == thisAppId &&
           currentPushers.first.appDisplayName == clientName &&
-          currentPushers.first.deviceDisplayName == client.deviceName &&
+          currentPushers.first.deviceDisplayName == deviceDisplayName &&
           currentPushers.first.lang == 'en' &&
           currentPushers.first.data.url.toString() == gatewayUrl &&
           currentPushers.first.data.format ==
@@ -237,7 +300,12 @@ class BackgroundPush {
           mapEquals(currentPushers.single.data.additionalProperties, {
             "data_message": pusherDataMessageFormat,
           })) {
-        Logs().i('[Push] Pusher already set');
+        Logs().i('[Push] Forcing pusher reset (MVP debug)');
+        oldTokens.add(token);
+        if (client.isLogged()) {
+          setNewPusher = true;
+        }
+
       } else {
         Logs().i('Need to set new pusher');
         oldTokens.add(token);
@@ -268,7 +336,7 @@ class BackgroundPush {
             pushkey: token!,
             appId: thisAppId,
             appDisplayName: clientName,
-            deviceDisplayName: client.deviceName!,
+            deviceDisplayName: deviceDisplayName,
             lang: 'en',
             data: PusherData(
               url: Uri.parse(gatewayUrl!),
@@ -305,12 +373,8 @@ class BackgroundPush {
     if (upAction) {
       return;
     }
-    if (!PlatformInfos.isIOS &&
-        (await UnifiedPush.getDistributors()).isNotEmpty) {
-      await setupUp();
-    } else {
-      await setupFirebase();
-    }
+    await setupFirebase();
+
 
     // ignore: unawaited_futures
     _flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails().then((
@@ -356,21 +420,38 @@ class BackgroundPush {
 
   Future<void> setupFirebase() async {
     Logs().v('Setup firebase');
+
     if (_fcmToken?.isEmpty ?? true) {
       try {
-        //<GOOGLE_SERVICES>_fcmToken = await firebase.getToken();
-        if (_fcmToken == null) throw ('PushToken is null');
+        // Включаем автоинициализацию FCM.
+        await FirebaseMessaging.instance.setAutoInitEnabled(true);
+
+        // На некоторых устройствах токен может появляться не сразу — делаем несколько попыток.
+        for (var i = 0; i < 5; i++) {
+          _fcmToken = await FirebaseMessaging.instance.getToken();
+          if ((_fcmToken ?? '').isNotEmpty) {
+            break;
+          }
+          await Future.delayed(const Duration(seconds: 2));
+        }
+
+        if ((_fcmToken ?? '').isEmpty) {
+          throw 'PushToken is null/empty';
+        }
       } catch (e, s) {
         Logs().w('[Push] cannot get token', e, e is String ? null : s);
         await _noFcmWarning();
         return;
       }
     }
+
     await setupPusher(
-      gatewayUrl: AppSettings.pushNotificationsGatewayUrl.value,
+      gatewayUrl: 'https://push.bolgarlar.ru/_matrix/push/v1/notify',
       token: _fcmToken,
     );
   }
+
+
 
   Future<void> setupUp() async {
     await UnifiedPushUi(
