@@ -39,6 +39,8 @@ class FluffyChatApp extends StatelessWidget {
     debugLogDiagnostics: true,
   );
 
+  static const Locale _ruLocale = Locale('ru');
+
   @override
   Widget build(BuildContext context) {
     return ThemeBuilder(
@@ -52,8 +54,14 @@ class FluffyChatApp extends StatelessWidget {
           primaryColor,
         ),
         scrollBehavior: CustomScrollBehavior(),
+
+        // Force Russian-only UI
+        locale: _ruLocale,
+        supportedLocales: const [_ruLocale],
+
+        // Keep delegates so L10n.of(context) and framework localizations work
         localizationsDelegates: L10n.localizationsDelegates,
-        supportedLocales: L10n.supportedLocales,
+
         routerConfig: router,
         builder: (context, child) => AppLockWidget(
           pincode: pincode,
