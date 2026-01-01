@@ -9,6 +9,7 @@ import 'package:fluffychat/widgets/matrix.dart';
 
 import 'homeserver_picker.dart';
 import 'roadmap_view.dart';
+import 'support_project_view.dart';
 
 class HomeserverPickerView extends StatelessWidget {
   final HomeserverPickerController controller;
@@ -16,6 +17,7 @@ class HomeserverPickerView extends StatelessWidget {
   const HomeserverPickerView(this.controller, {super.key});
 
   static const String _roadmapMenuValue = 'roadmap';
+  static const String _supportMenuValue = 'support_project';
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +48,15 @@ class HomeserverPickerView extends StatelessWidget {
                 return;
               }
 
+              if (value == _supportMenuValue) {
+                Navigator.of(context, rootNavigator: true).push(
+                  MaterialPageRoute(
+                    builder: (_) => const SupportProjectView(),
+                  ),
+                );
+                return;
+              }
+
               if (value is MoreLoginActions) {
                 controller.onMoreAction(value);
               }
@@ -59,6 +70,17 @@ class HomeserverPickerView extends StatelessWidget {
                     Icon(Icons.map_outlined),
                     SizedBox(width: 12),
                     Text('Карта развития приложения'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem<Object>(
+                value: _supportMenuValue,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.volunteer_activism_outlined),
+                    SizedBox(width: 12),
+                    Text('Поддержите проект'),
                   ],
                 ),
               ),
