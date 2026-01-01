@@ -10,6 +10,8 @@ import 'package:fluffychat/widgets/matrix.dart';
 import 'homeserver_picker.dart';
 import 'roadmap_view.dart';
 import 'support_project_view.dart';
+import 'privacy_view.dart';
+
 
 class HomeserverPickerView extends StatelessWidget {
   final HomeserverPickerController controller;
@@ -56,6 +58,14 @@ class HomeserverPickerView extends StatelessWidget {
                 );
                 return;
               }
+
+              if (value == MoreLoginActions.privacy) {
+                Navigator.of(context, rootNavigator: true).push(
+                  MaterialPageRoute(builder: (_) => const PrivacyView()),
+                );
+                return;
+              }
+
 
               if (value is MoreLoginActions) {
                 controller.onMoreAction(value);
