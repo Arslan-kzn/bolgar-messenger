@@ -1,113 +1,90 @@
-# Privacy
+# Конфиденциальность (BOLGAR Messenger)
 
-FluffyChat is available on Android, iOS, Linux and as a web version. Desktop versions for Windows and macOS may follow.
+Дата обновления: 2026-01-01
 
-*   [Matrix](#matrix)
-*   [Database](#database)
-*   [Encryption](#encryption)
-*   [App Permissions](#app-permissions)
-*   [Push Notifications](#push-notifications)
-*   [PlayStore Safety Standards](#playstore-safety)
+BOLGAR Messenger — клиент Matrix, основанный на open-source проекте FluffyChat (AGPL-3.0). Приложение само по себе не является “сервером”: оно подключается к Matrix-серверу (www.bolgarlar.ru) и отображает данные, которые этот сервер возвращает.
 
-## <a id="matrix" href="#matrix">#</a> Matrix
-FluffyChat uses the Matrix protocol. This means that FluffyChat is just a client that can be connected to any compatible matrix server. The respective data protection agreement of the server selected by the user then applies.
+Важно: к данным на стороне сервера применяется политика конфиденциальности и правила того Matrix-сервера, который вы выбрали.
 
-For convenience, one or more servers are set as default that the FluffyChat developers consider trustworthy. The developers of FluffyChat do not guarantee their trustworthiness. Before the first communication, users are informed which server they are connecting to.
+---
 
-FluffyChat only communicates with the selected server and with [OpenStreetMap](https://openstreetmap.org) to display maps.
+## 1) Matrix и сервер bolgarlar.ru
 
-More information is available at: [https://matrix.org](https://matrix.org)
+- BOLGAR Messenger — это Matrix-клиент.
+- Все сообщения, файлы и метаданные, которые вы отправляете/получаете, обрабатываются Matrix-сервером bolgarlar.ru.
 
-## <a id="database" href="#database">#</a> Database
-FluffyChat caches some data received from the server in a local sqflite database on the device of the user. On web indexedDB is used. FluffyChat always tries to encrypt the database by using SQLCipher and stores the encryption key in the [Secure Storage](https://pub.dev/packages/flutter_secure_storage) of the device.
+Дополнительная информация о Matrix: https://matrix.org
 
-More information is available at: [https://pub.dev/packages/sqflite](https://pub.dev/packages/sqflite) and [https://pub.dev/packages/sqlcipher_flutter_libs](https://pub.dev/packages/sqlcipher_flutter_libs)
+---
 
-## <a id="encryption" href="#encryption">#</a> Encryption
-All communication of substantive content between Fluffychat and any server is done in secure way, using transport encryption to protect it.
+## 2) Какие данные обрабатывает приложение
 
-FluffyChat also uses End-To-End-Encryption by using [Vodozemac](https://github.com/matrix-org/vodozemac) and enables it by default for private chats.
+На устройстве пользователя приложение может обрабатывать:
 
-## <a id="app-permissions" href="#app-permissions">#</a> App Permissions
+- Matrix-ID пользователя, сервер bolgarlar.ru, настройки приложения.
+- Технические данные, необходимые для поддержания сессии и работы клиента (например, токены/ключи, состояние синхронизации).
+- Кэш данных, полученных от Matrix-сервера (для ускорения работы).
+- При включённых уведомлениях — данные, необходимые для доставки push-уведомлений (см. раздел 5).
 
-The permissions are the same on Android and iOS but may differ in the name. This are the Android Permissions:
+Приложение не получает “новых” персональных данных само по себе: основная часть пользовательских данных возникает в процессе общения в Matrix и хранится/обрабатывается на сервере bolgarlar.ru.
 
-#### Internet Access
-FluffyChat needs to have internet access to communicate with the Matrix Server.
+---
 
-#### Vibrate
-FluffyChat uses vibration for local notifications. More informations about this are at the used package:
-[https://pub.dev/packages/flutter_local_notifications](https://pub.dev/packages/flutter_local_notifications)
+## 3) Локальная база данных и кэш
 
-#### Record Audio
-FluffyChat can send voice messages in a chat and therefore needs to have the permission to record audio.
+BOLGAR Messenger кэширует часть данных, полученных от сервера, локально на устройстве, чтобы приложение работало быстрее и стабильнее.
+Данные кэша предназначены для работы клиента и не являются отдельной “облачной” базой BOLGAR Messenger.
 
-#### Write External Storage
-The user is able to save received files and therefore app needs this permission.
+---
 
-#### Read External Storage
-The user is able to send files from the device's file system.
+## 4) Шифрование
 
-#### Location
-FluffyChat makes it possible to share the current location via the chat. When the user shares their location, FluffyChat uses the device location service and sends the geo-data via Matrix.
+- Соединение между клиентом и сервером защищается транспортным шифрованием (HTTPS/TLS).
+- Matrix поддерживает сквозное шифрование (End-to-End Encryption, E2EE) в поддерживаемых чатах.
+- При E2EE содержимое сообщений шифруется на устройствах участников и не должно быть доступно серверу в открытом виде.
 
-## <a id="push-notifications" href="#push-notifications">#</a> Push Notifications
-FluffyChat uses the Firebase Cloud Messaging service for push notifications on Android and iOS. This takes place in the following steps:
-1. The matrix server sends the push notification to the FluffyChat Push Gateway
-2. The FluffyChat Push Gateway forwards the message in a different format to Firebase Cloud Messaging
-3. Firebase Cloud Messaging waits until the user's device is online again
-4. The device receives the push notification from Firebase Cloud Messaging and displays it as a notification
+---
 
-The source code of the push gateway can be viewed here:
-[https://github.com/krille-chan/fluffygate](https://github.com/krille-chan/fluffygate)
+## 5) Push-уведомления (Android)
 
-`event_id_only` is used as the format for the push notification. A typical push notification therefore only contains:
-- Event ID
-- Room ID
-- Unread Count
-- Information about the device that is to receive the message
+Для доставки push-уведомлений на Android используется Firebase Cloud Messaging (FCM).
 
-A typical push notification could look like this:
-```json
-{
-  "notification": {
-    "event_id": "$3957tyerfgewrf384",
-    "room_id": "!slw48wfj34rtnrf:example.com",
-    "counts": {
-      "unread": 2,
-      "missed_calls": 1
-    },
-    "devices": [
-      {
-        "app_id": "chat.fluffy.fluffychat",
-        "pushkey": "V2h5IG9uIGVhcnRoIGRpZCB5b3UgZGVjb2RlIHRoaXM/",
-        "pushkey_ts": 12345678,
-        "data": {},
-        "tweaks": {
-          "sound": "bing"
-        }
-      }
-    ]
-  }
-}
-```
+Типичный подход для Matrix-push: уведомление может содержать технические данные (например, идентификатор события, комнату, счётчики непрочитанных), но не обязано содержать текст сообщений.
 
-FluffyChat sets the `event_id_only` flag at the Matrix Server. This server is then responsible to send the correct data.
+Поскольку push-уведомления проходят через инфраструктуру доставки уведомлений, обработка push-данных также подпадает под правила и политики соответствующего провайдера (например, Firebase/Google).
 
+---
 
-# <a id="playstore-safety" href="#playstore-safety">#</a> Explanation of FluffyChat's Compliance with Google Play Store's Safety Standards
+## 6) Разрешения приложения (Android)
 
-FluffyChat is committed to promoting a safe and respectful environment for all users. As a Matrix client, FluffyChat connects users to various Matrix servers. Please note that FluffyChat does not host or manage any servers directly, and as such, we do not have the capability to enforce content moderation or deletion within the app itself.
+BOLGAR Messenger может запрашивать разрешения, необходимые для функций мессенджера, например:
 
-To enhance user safety and help protect against the sexual abuse and exploitation of children, FluffyChat enables users to report inappropriate content directly to server administrators.
+- Интернет — для подключения к серверу.
+- Уведомления/вибрация — для отображения локальных уведомлений.
+- Микрофон — для голосовых сообщений (если вы используете эту функцию).
+- Доступ к файлам/медиа — для отправки/сохранения файлов.
+- Геолокация — только если вы явно используете отправку/показ геопозиции в чате.
 
-#### Reporting Content or Users:
+Вы можете управлять разрешениями в настройках Android.
 
-1. Mark a message in the chat: Tap and hold the message you wish to report.
-2. Report the message: Select the "Report" option.
-3. Provide a reason and score: Enter the reason for reporting and assign a score from 1-100 to indicate how offensive the content is.
-4. Notification to admin: The server administrator will be notified of the reported content.
+---
 
-In addition to reporting messages, users can also report other users following a similar process.
+## 7) Сторонние сервисы
 
-We encourage server administrators to adhere to strict safety standards and provide mechanisms for addressing and moderating inappropriate content. For more information on the Matrix protocol and its safety standards, please refer to the following link: https://matrix.org/docs/older/moderation/
+В зависимости от включённых функций приложение может взаимодействовать с:
+- сервером bolgarlar.ru (основной обмен данными),
+- сервисами доставки push-уведомлений (например, FCM),
+- картографическими источниками при использовании геолокации — только в сценариях, когда вы используете функции карты/локации.
+
+---
+
+## 8) Как связаться по вопросам конфиденциальности
+
+Если вы нашли проблему или хотите уточнить детали обработки данных, используйте:
+- Issues репозитория: https://github.com/Arslan-kzn/bolgar-messenger/issues
+
+---
+
+## 9) Изменения политики
+
+Мы можем обновлять этот документ по мере развития проекта. Актуальная версия публикуется в репозитории BOLGAR Messenger.
