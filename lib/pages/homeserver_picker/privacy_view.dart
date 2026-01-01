@@ -9,7 +9,7 @@ class PrivacyView extends StatelessWidget {
   const PrivacyView({super.key});
 
   static const String _privacyFullTextUrl =
-      'https://github.com/Arslan-kzn/bolgar-messenger/blob/bolgar-onboarding-menu/PRIVACY.md';
+      'https://github.com/Arslan-kzn/bolgar-messenger/blob/bolgar-branding/PRIVACY.md';
 
   @override
   Widget build(BuildContext context) {
