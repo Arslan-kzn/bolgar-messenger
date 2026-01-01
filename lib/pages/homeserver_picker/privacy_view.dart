@@ -9,7 +9,7 @@ class PrivacyView extends StatelessWidget {
   const PrivacyView({super.key});
 
   static const String _privacyFullTextUrl =
-      'https://github.com/Arslan-kzn/bolgar-messenger/blob/main/PRIVACY.md';
+      'https://github.com/Arslan-kzn/bolgar-messenger/blob/bolgar-onboarding-menu/PRIVACY.md';
 
   @override
   Widget build(BuildContext context) {
@@ -31,34 +31,46 @@ class PrivacyView extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               const Text(
-                'BOLGAR Messenger — Matrix-клиент. Сообщения и медиа хранятся на выбранном вами Matrix-сервере (homeserver). '
-                    'Владелец сервера и его правила хранения данных определяют, как именно обрабатываются данные на стороне сервера.',
+                'BOLGAR Messenger — Matrix-клиент. Приложение подключается к Matrix-серверу bolgarlar.ru и отображает данные, которые этот сервер возвращает.',
                 style: TextStyle(height: 1.35),
               ),
               const SizedBox(height: 16),
 
               const Text(
-                'Что мы обрабатываем в приложении',
+                'Какие данные обрабатывает приложение',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
               const Text(
-                '• Учётная запись Matrix (ID пользователя), выбранный сервер.\n'
-                    '• Технические данные для работы приложения (настройки, состояние сессии).\n'
-                    '• Уведомления: приложение может получать push-сообщения о новых событиях (без раскрытия содержимого переписки).\n'
-                    '• Логи: при отладке могут появляться технические логи на устройстве.',
+                '• Matrix-ID пользователя, сервер bolgarlar.ru, настройки приложения.\n'
+                    '• Технические данные для работы сессии (например, токены/ключи, состояние синхронизации).\n'
+                    '• Кэш данных, полученных от Matrix-сервера (для ускорения работы).\n'
+                    '• При включённых уведомлениях — данные, необходимые для доставки push-уведомлений.',
                 style: TextStyle(height: 1.35),
               ),
               const SizedBox(height: 16),
 
               const Text(
-                'Про шифрование',
+                'Шифрование',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
               const Text(
                 'Matrix поддерживает сквозное шифрование (E2EE) в поддерживаемых чатах. '
                     'При E2EE содержимое сообщений шифруется на устройствах участников и не должно быть доступно серверу в открытом виде.',
+                style: TextStyle(height: 1.35),
+              ),
+              const SizedBox(height: 16),
+
+              const Text(
+                'Push-уведомления (Android)',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Для доставки push-уведомлений на Android может использоваться Firebase Cloud Messaging (FCM). '
+                    'Типичный подход для Matrix-push: уведомление может содержать технические данные (идентификаторы и счётчики), '
+                    'но не обязано содержать текст сообщений.',
                 style: TextStyle(height: 1.35),
               ),
               const SizedBox(height: 16),
