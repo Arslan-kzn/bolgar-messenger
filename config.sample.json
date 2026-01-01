@@ -1,7 +1,7 @@
 {
   "applicationName": "Bolgarlar",
   "defaultHomeserver": "https://bolgarlar.ru",
-  "privacyUrl": "https://github.com/krille-chan/fluffychat/blob/main/PRIVACY.md",
+  "privacyUrl": "https://github.com/Arslan-kzn/bolgar-messenger/blob/main/PRIVACY.mdd",
   "audioRecordingNumChannels": 1,
   "audioRecordingAutoGain": true,
   "audioRecordingEchoCancel": false,
