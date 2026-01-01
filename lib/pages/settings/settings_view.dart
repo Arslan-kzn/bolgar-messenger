@@ -105,8 +105,8 @@ class SettingsView extends StatelessWidget {
                           ),
                           Expanded(
                             child: Column(
-                              mainAxisAlignment: .center,
-                              crossAxisAlignment: .start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 TextButton.icon(
                                   onPressed: controller.setDisplaynameAction,
@@ -238,12 +238,18 @@ class SettingsView extends StatelessWidget {
                   ListTile(
                     leading: const Icon(Icons.privacy_tip_outlined),
                     title: Text(L10n.of(context).privacy),
-                    onTap: () => launchUrl(AppConfig.privacyUrl),
+                    onTap: () => context.go('/rooms/settings/privacy'),
+                    tileColor: activeRoute.startsWith('/rooms/settings/privacy')
+                        ? theme.colorScheme.surfaceContainerHigh
+                        : null,
                   ),
                   ListTile(
                     leading: const Icon(Icons.info_outline_rounded),
                     title: Text(L10n.of(context).about),
-                    onTap: () => PlatformInfos.showDialog(context),
+                    onTap: () => context.go('/rooms/settings/about'),
+                    tileColor: activeRoute.startsWith('/rooms/settings/about')
+                        ? theme.colorScheme.surfaceContainerHigh
+                        : null,
                   ),
                   Divider(color: theme.dividerColor),
                   ListTile(
