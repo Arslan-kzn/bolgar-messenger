@@ -10,7 +10,8 @@ class AboutView extends StatelessWidget {
 
   static const String _repoUrl = 'https://github.com/Arslan-kzn/bolgar-messenger';
   static const String _licenseUrl =
-      'https://github.com/Arslan-kzn/bolgar-messenger/blob/main/LICENSE';
+      'https://github.com/Arslan-kzn/bolgar-messenger/blob/bolgar-branding/LICENSE';
+
 
   @override
   Widget build(BuildContext context) {
