@@ -120,24 +120,16 @@ class LoginView extends StatelessWidget {
                         : Text(L10n.of(context).login),
                   ),
                 ),
-                const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      TextButton(
-                        onPressed: controller.loading ? null : controller.passwordForgotten,
-                        child: Text(L10n.of(context).passwordForgotten),
-                      ),
-                      if (controller.canRegister)
-                        TextButton(
-                          onPressed: controller.loading ? null : controller.registerAction,
-                          child: const Text('Создать аккаунт'),
-                        ),
-                    ],
+                if (controller.canRegister) ...[
+                  const SizedBox(height: 16),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    child: OutlinedButton(
+                      onPressed: controller.loading ? null : controller.registerAction,
+                      child: const Text('Создать аккаунт'),
+                    ),
                   ),
-                ),
+                ],
                 const SizedBox(height: 16),
               ],
             ),
