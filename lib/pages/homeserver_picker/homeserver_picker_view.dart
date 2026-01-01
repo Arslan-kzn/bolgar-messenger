@@ -1,30 +1,31 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_linkify/flutter_linkify.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-import 'package:fluffychat/config/app_config.dart';
-import 'package:fluffychat/config/setting_keys.dart';
 import 'package:fluffychat/l10n/l10n.dart';
-import 'package:fluffychat/widgets/adaptive_dialogs/adaptive_dialog_action.dart';
 import 'package:fluffychat/widgets/layouts/login_scaffold.dart';
 import 'package:fluffychat/widgets/matrix.dart';
+
 import 'homeserver_picker.dart';
+import 'roadmap_view.dart';
 
 class HomeserverPickerView extends StatelessWidget {
   final HomeserverPickerController controller;
 
   const HomeserverPickerView(this.controller, {super.key});
 
+  static const String _roadmapMenuValue = 'roadmap';
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return LoginScaffold(
-      enforceMobileMode: Matrix.of(
-        context,
-      ).widget.clients.any((client) => client.isLogged()),
+      enforceMobileMode: Matrix.of(context)
+          .widget
+          .clients
+          .any((client) => client.isLogged()),
       appBar: AppBar(
         centerTitle: true,
         title: Text(
@@ -33,11 +34,35 @@ class HomeserverPickerView extends StatelessWidget {
               : L10n.of(context).login,
         ),
         actions: [
-          PopupMenuButton<MoreLoginActions>(
+          PopupMenuButton<Object>(
             useRootNavigator: true,
-            onSelected: controller.onMoreAction,
+            onSelected: (value) {
+              if (value == _roadmapMenuValue) {
+                Navigator.of(context, rootNavigator: true).push(
+                  MaterialPageRoute(
+                    builder: (_) => const RoadmapView(),
+                  ),
+                );
+                return;
+              }
+
+              if (value is MoreLoginActions) {
+                controller.onMoreAction(value);
+              }
+            },
             itemBuilder: (_) => [
-              PopupMenuItem(
+              const PopupMenuItem<Object>(
+                value: _roadmapMenuValue,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.map_outlined),
+                    SizedBox(width: 12),
+                    Text('Карта развития приложения'),
+                  ],
+                ),
+              ),
+              PopupMenuItem<Object>(
                 value: MoreLoginActions.privacy,
                 child: Row(
                   mainAxisSize: .min,
@@ -48,7 +73,7 @@ class HomeserverPickerView extends StatelessWidget {
                   ],
                 ),
               ),
-              PopupMenuItem(
+              PopupMenuItem<Object>(
                 value: MoreLoginActions.about,
                 child: Row(
                   mainAxisSize: .min,
@@ -87,9 +112,8 @@ class HomeserverPickerView extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 32.0),
                       child: SelectableLinkify(
                         text: L10n.of(context).appIntroduction,
-                        textScaleFactor: MediaQuery.textScalerOf(
-                          context,
-                        ).scale(1),
+                        textScaleFactor:
+                        MediaQuery.textScalerOf(context).scale(1),
                         textAlign: TextAlign.center,
                         linkStyle: TextStyle(
                           color: theme.colorScheme.secondary,
