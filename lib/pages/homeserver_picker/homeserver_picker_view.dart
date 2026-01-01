@@ -11,6 +11,7 @@ import 'homeserver_picker.dart';
 import 'roadmap_view.dart';
 import 'support_project_view.dart';
 import 'privacy_view.dart';
+import 'about_view.dart';
 
 
 class HomeserverPickerView extends StatelessWidget {
@@ -62,6 +63,13 @@ class HomeserverPickerView extends StatelessWidget {
               if (value == MoreLoginActions.privacy) {
                 Navigator.of(context, rootNavigator: true).push(
                   MaterialPageRoute(builder: (_) => const PrivacyView()),
+                );
+                return;
+              }
+
+              if (value == MoreLoginActions.about) {
+                Navigator.of(context, rootNavigator: true).push(
+                  MaterialPageRoute(builder: (_) => const AboutView()),
                 );
                 return;
               }
