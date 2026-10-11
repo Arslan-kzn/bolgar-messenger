@@ -1,122 +1,153 @@
-![Screenshot](https://github.com/krille-chan/fluffychat/blob/main/assets/banner_transparent.png?raw=true)
+# BOLGAR Messenger
 
-[FluffyChat](https://fluffy.chat) is an open source, nonprofit and cute [[matrix](https://matrix.org)] client written in [Flutter](https://flutter.dev). The goal of the app is to create an easy to use instant messenger which is open source and accessible for everyone.
+BOLGAR Messenger — открытый Matrix-клиент для татарской и мусульманской общины. Приложение предназначено для личной переписки и общения в комнатах на базе протокола Matrix и основано на FluffyChat.
 
-### Links:
+- [Исходный код BOLGAR Messenger](https://github.com/Arslan-kzn/bolgar-messenger)
+- Основная ветка разработки: `bolgar-stable`.
+- [Сообщить об ошибке или предложить улучшение](https://github.com/Arslan-kzn/bolgar-messenger/issues)
+- [Лицензия AGPL-3.0](LICENSE)
 
-- 🌐 [[Weblate] Translate FluffyChat into your language](https://hosted.weblate.org/projects/fluffychat/)
-- 🌍 [[m] Join the community](https://matrix.to/#/#fluffy-space:matrix.org)
-- 📰 [[Mastodon] Get updates on social media](https://troet.cafe/@krille)
-- 🖥️ [[Famedly] Server hosting and professional support](https://famedly.com/kontakt)
-- 💝 [[Liberapay] Support FluffyChat development](https://de.liberapay.com/KrilleChritzelius)
+В Android приложение отображается как **Bolgarlar**, идентификатор пакета — `ru.bolgarlar.messenger`. Внутреннее имя Dart-пакета `fluffychat` и некоторые платформенные идентификаторы сохранены от исходного проекта.
 
-<a href='https://ko-fi.com/C1C86VN53' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi5.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+## Возможности
 
-### Screenshots:
+В исходном коде этой ветки реализованы:
 
-<img src="https://github.com/krille-chan/fluffychat-website/blob/main/src/assets/screenshots/mobile.png?raw=true" height="300">
-<img src="https://github.com/krille-chan/fluffychat-website/blob/main/src/assets/screenshots/desktop.png?raw=true" height="300">
+- Личные сообщения и групповые комнаты Matrix.
+- Отправка текста, изображений и файлов.
+- Запись голосовых сообщений и отправка геопозиции.
+- Пространства (Spaces) для организации комнат.
+- Сквозное шифрование в зашифрованных комнатах и проверка ключей собеседника, в том числе с помощью emoji.
+- Светлая, тёмная и системная темы оформления.
 
-# Features
+Это перечень функций, подтверждённых исходным кодом, а не отчёт о тестировании каждой платформы. Доступность функций зависит от Matrix-сервера, настроек комнаты, разрешений устройства и платформы. Сквозное шифрование не распространяется автоматически на все комнаты.
 
-- 📩 Send all kinds of messages, images and files
-- 🎙️ Voice messages
-- 📍 Location sharing
-- 🔔 Push notifications
-- 💬 Unlimited private and public group chats
-- 📣 Public channels with thousands of participants
-- 🛠️ Feature rich group moderation including all matrix features
-- 🔍 Discover and join public groups
-- 🌙 Dark mode
-- 🎨 Material You design
-- 📟 Hides complexity of Matrix IDs behind simple QR codes
-- 😄 Custom emotes and stickers
-- 🌌 Spaces
-- 🔄 Compatible with Element, Nheko, NeoChat and all other Matrix apps
-- 🔐 End to end encryption
-- 🔒 Encrypted chat backup
-- 😀 Emoji verification & cross signing
+Для работы нужна учётная запись на Matrix-сервере. Возможность регистрации и взаимодействия с другими серверами определяется настройками выбранного сервера. Push-уведомления требуют отдельной настройки доставки; наличие зависимостей Firebase и UnifiedPush само по себе не гарантирует работающие уведомления.
 
-... and much more.
+## Технологии
 
+- **Flutter и Dart** — интерфейс и клиентская логика.
+- **Matrix Dart SDK** (`matrix`) — взаимодействие с Matrix-сервером.
+- **flutter_vodozemac / Vodozemac и Rust** — криптографические компоненты.
+- **Gradle Kotlin DSL** — Android-сборка.
+- **flutter_webrtc** — зависимость для коммуникационных функций; наличие пакета не означает подтверждённую готовность звонков на всех платформах.
 
-# Installation
+Зависимости и ограничения версий перечислены в [pubspec.yaml](pubspec.yaml).
 
-Please visit the website for installation instructions:
+## Установка
 
-- https://fluffy.chat
+На момент проверки 11 октября 2026 года в [GitHub Releases проекта](https://github.com/Arslan-kzn/bolgar-messenger/releases) нет опубликованных релизов. Этот README не указывает непроверенные ссылки на APK или магазины приложений.
 
-# How to build
+Для самостоятельной сборки используйте инструкции ниже. Установочные файлы FluffyChat относятся к исходному проекту и не являются сборками BOLGAR.
 
-1. To build FluffyChat you need [Flutter](https://flutter.dev) and [Rust](https://www.rust-lang.org/tools/install)
+## Сборка из исходного кода
 
-2. Clone the repo:
+### Статус инструкций
+
+Инструкции сверены с файлами ветки `bolgar-stable` 11 октября 2026 года. Сборки в рамках этой проверки **не запускались**: в среде проверки отсутствуют Flutter и Dart. Приведённые команды — отправная точка по текущей конфигурации, а не гарантия успешной сборки или готовности релиза.
+
+В [versions.env](.github/workflows/versions.env) указаны **Flutter 3.38.4** и **Java 17**. В `pubspec.yaml` требуется Dart `>=3.10.0 <4.0.0`. Для воспроизводимости начните с указанной версии Flutter и используйте SDK Dart, поставляемый с ней.
+
+Понадобятся Git, Flutter, Rust/Cargo и инструменты целевой платформы. Проверьте окружение командой `flutter doctor -v`; все зависимости скачиваются из внешних источников.
+
+### Получение проекта
+
+```bash
+git clone --branch bolgar-stable https://github.com/Arslan-kzn/bolgar-messenger.git
+cd bolgar-messenger
+flutter doctor -v
+flutter pub get
 ```
-git clone https://github.com/krille-chan/fluffychat.git
-cd fluffychat
-```
-3. Choose your target platform below and enable support for it.
-3.1 If you want, enable Googles Firebase Cloud Messaging:
 
-`./scripts/add-firebase-messaging.sh`
-
-4. Debug with: `flutter run`
+После подготовки целевой платформы для отладки можно использовать `flutter run` с выбором подключённого устройства.
 
 ### Android
 
-* Build with: `flutter build apk`
+Понадобятся Android SDK, принятые лицензии SDK и JDK 17. Параметры compileSdk, minSdk, targetSdk и NDK берутся из Flutter; не подменяйте их произвольными значениями.
 
-### iOS / iPadOS
+Для локальной отладочной APK:
 
-* Have a Mac with Xcode installed, and set up for Xcode-managed app signing
-* If you want automatic app installation to connected devices, make sure you have Apple Configurator installed, with the Automation Tools (`cfgutil`) enabled
-* Set a few environment variables
-    * FLUFFYCHAT_NEW_TEAM: the Apple Developer team that your certificates should live under
-    * FLUFFYCHAT_NEW_GROUP: the group you want App IDs and such to live under (ie: com.example.fluffychat)
-    * FLUFFYCHAT_INSTALL_IPA: set to `1` if you want the IPA to be deployed to connected devices after building, otherwise unset
-* Run `./scripts/build-ios.sh`
+```bash
+flutter build apk --debug
+```
+
+Ожидаемый путь: `build/app/outputs/flutter-apk/app-debug.apk`. Это отладочная сборка, не предназначенная для публикации.
+
+Для release сначала настройте собственный keystore и локальный файл `android/key.properties` с полями `storeFile`, `storePassword`, `keyAlias`, `keyPassword`, которые читает [android/app/build.gradle.kts](android/app/build.gradle.kts). Путь `storeFile` разрешается относительно модуля `android/app`, если не задан абсолютный путь. Не публикуйте ключи и пароли в репозитории.
+
+Без этой настройки конфигурация использует заглушку `dummy.keystore` и фиктивные реквизиты: обычная команда release не является готовой инструкцией для чистого клона.
+
+После настройки подписи:
+
+```bash
+flutter build apk --release
+```
+
+Ожидаемый путь: `build/app/outputs/flutter-apk/app-release.apk`. Успешность сборки и установки нужно проверить отдельно.
+
+Плагин Google Services подключается только при наличии `android/app/google-services.json`. Настройка Firebase относится к отдельной задаче: [scripts/add-firebase-messaging.sh](scripts/add-firebase-messaging.sh) изменяет зависимости и исходные файлы, поэтому его не нужно запускать как обязательный шаг обычной сборки. Унаследованный release workflow не является подтверждением работающей публикации BOLGAR.
 
 ### Web
 
-* Build with:
+В репозитории есть web-проект и [scripts/prepare-web.sh](scripts/prepare-web.sh). Скрипт собирает web-компоненты Vodozemac и загружает native imaging. Он требует POSIX-окружения, Git, Rust/Cargo, `flutter_rust_bridge_codegen` (устанавливается скриптом), `yq` с поддержкой используемого синтаксиса, `expr`, `readlink -f`, `curl` и `unzip`. Workflow также устанавливает Node.js и компонент `rust-src` для nightly toolchain.
+
+После подготовки этих зависимостей последовательность из репозитория:
+
 ```bash
-./scripts/prepare-web.sh # To install Vodozemac
+./scripts/prepare-web.sh
 flutter build web --release
 ```
 
-* Optionally configure by serving a `config.json` at the same path as fluffychat.
-  An example can be found at `config.sample.json`. All values there are optional.
-  **Please only the values, you really need**. If you e.g. only want
-  to change the default homeserver, then only modify the `defaultHomeserver` key.
+Ожидаемый результат — `build/web/`. Скрипт и сборка здесь не запускались; совместимость версий инструментов требует проверки. Скрипт изменяет файлы web-ресурсов — проверьте `git diff` после запуска.
 
-### Desktop (Linux, Windows, macOS)
+Для дополнительных настроек существует [config.sample.json](config.sample.json). Не копируйте его вслепую: в примере есть устаревшая ссылка `privacyUrl` с веткой `main` и опечаткой `PRIVACY.mdd`. Перед размещением `config.json` проверьте нужные значения и адреса. Развёртывание сервера и web-приложения не входит в эти инструкции.
 
-* Enable Desktop support in Flutter: https://flutter.dev/desktop
+### Linux, Windows и macOS
 
-#### Install custom dependencies (Linux)
+В репозитории присутствуют проекты для трёх desktop-платформ. Ниже — команды для запуска на соответствующей ОС после подготовки её Flutter-окружения; успешная сборка BOLGAR на этих платформах в этой проверке не подтверждена.
 
-```bash
-sudo apt install libjsoncpp1 libsecret-1-dev libsecret-1-0 librhash0 libwebkit2gtk-4.0-dev
-```
+| Платформа | Требования и источник | Команда |
+| --- | --- | --- |
+| Linux | Flutter Linux toolchain, GTK 3 и зависимости плагинов. Список пакетов текущего workflow см. ниже. | `flutter build linux --release` |
+| Windows | Windows, Visual Studio с инструментами разработки desktop-приложений на C++, Flutter, CMake и Rust. Последовательность также есть в [build-windows.ps1](scripts/build-windows.ps1). | `flutter build windows --release` |
+| macOS | macOS, Xcode, инструменты для зависимостей Flutter-плагинов и Rust; для распространения нужна отдельная настройка подписи. | `flutter build macos --release` |
 
-* Build with one of these:
-```bash
-flutter build linux --release
-flutter build windows --release
-flutter build macos --release
-```
+В [.github/workflows/release.yaml](.github/workflows/release.yaml) для Linux указаны:
+`curl clang cmake ninja-build pkg-config libgtk-3-dev libblkid-dev liblzma-dev libjsoncpp-dev cmake-data libsecret-1-dev libsecret-1-0 librhash0 libssl-dev libwebkit2gtk-4.1-dev`.
+Это список для Ubuntu-окружения workflow, не универсальная команда для любого дистрибутива. Старый список с `libwebkit2gtk-4.0-dev` не следует считать актуальным для всех систем.
 
+Некоторые имена desktop-сборок и идентификаторы остаются FluffyChat; наличие платформенного каталога не означает завершённый ребрендинг или доступный установщик BOLGAR.
 
-# Special thanks
+### iOS / iPadOS
 
-* <a href="https://github.com/fabiyamada">Fabiyamada</a> is a graphics designer and has made the fluffychat logo and the banner. Big thanks for her great designs.
+Есть iOS-проект, но подтверждённой инструкции выпуска BOLGAR для iOS в этой проверке нет. Нужны macOS, Xcode, зависимости Flutter-плагинов и собственные настройки Apple Developer: bundle identifiers, App Groups, entitlements и подпись приложения и расширения.
 
-* <a href="https://github.com/advocatux">Advocatux</a> has made the Spanish translation with great love and care. He always stands by my side and supports my work with great commitment.
+Не используйте [build-ios.sh](scripts/build-ios.sh) и [build-macos.sh](scripts/build-macos.sh) как готовую инструкцию: оба начинаются с применения `scripts/enable-android-google-services.patch`, которого нет в этой ветке, и сохраняют исходные идентификаторы и параметры FluffyChat. Перед сборкой требуется отдельная проверка этих скриптов и конфигурации Apple-проектов.
 
-* Thanks to MTRNord and Sorunome for developing.
+## Происхождение и благодарности
 
-* Also thanks to all translators and testers! With your help, fluffychat is now available in more than 12 languages.
+BOLGAR Messenger — производный проект, основанный на [FluffyChat](https://github.com/krille-chan/fluffychat), а не независимая реализация Matrix-клиента с нуля. Благодарим Christian Pauly (Krille), авторов и участников FluffyChat за исходный код.
 
-* <a href="https://github.com/madsrh/WoodenBeaver">WoodenBeaver</a> sound theme for the notification sound.
+Сохраняем благодарности исходного проекта:
 
-* The Matrix Foundation for making and maintaining the [emoji translations](https://github.com/matrix-org/matrix-spec/blob/main/data-definitions/sas-emoji.json) used for emoji verification, licensed Apache 2.0
+- Fabiyamada — логотип и баннер FluffyChat.
+- Advocatux — испанский перевод и поддержка проекта.
+- MTRNord и Sorunome — участие в разработке.
+- Всем переводчикам и тестировщикам.
+- [WoodenBeaver](https://github.com/madsrh/WoodenBeaver) — звуковая тема уведомлений.
+- Matrix Foundation — [переводы emoji для проверки ключей](https://github.com/matrix-org/matrix-spec/blob/main/data-definitions/sas-emoji.json), распространяемые под Apache-2.0.
+
+Упоминания ресурсов и авторов FluffyChat обозначают происхождение компонентов; они не являются контактами поддержки или каналами BOLGAR.
+
+## Лицензия
+
+Проект распространяется под **GNU Affero General Public License, версия 3 (AGPL-3.0)**. Полный текст и имеющиеся уведомления приведены в [LICENSE](LICENSE), включая уведомление `Copyright (C) 2020 Christian Pauly` и формулировку о версии 3 или более поздней версии.
+
+При модификации и распространении необходимо соблюдать условия лицензии, в частности:
+
+- Сохранять применимые уведомления об авторских правах, лицензии и отсутствии гарантий.
+- Обозначать изменения и дату изменения модифицированных файлов согласно разделу 5.
+- При передаче бинарных сборок предоставлять соответствующий исходный код (Corresponding Source) способом, предусмотренным разделом 6.
+- Если модифицированная версия поддерживает удалённое взаимодействие по сети, явно предлагать всем взаимодействующим таким образом пользователям бесплатный доступ к соответствующему исходному коду этой версии согласно разделу 13.
+
+Ссылка на исходный код должна соответствовать распространяемой версии, включая её изменения и необходимые материалы для сборки. Зависимости и сторонние ресурсы сохраняют собственные лицензии и уведомления. Это краткое описание не заменяет полный текст лицензии.
